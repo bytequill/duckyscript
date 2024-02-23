@@ -1,0 +1,100 @@
+REM Title: Install browser extension - Windows
+REM Author: bytequill
+REM Description: Install a browser extension of your choice in Chrome/Edge/Firefox using macros.
+REM Target: Windows Chrome/Edge/Firefox
+
+ATTACKMODE HID
+REM Please use link to the webstore of your browser
+DEFINE #CHROME_ENABLED FALSE
+DEFINE #CHROME_EXT_URL chromewebstore.google.com/detail/ublock-origin/cjpalhdlnbpafiamejdnhcphjbkeiagm
+DEFINE #FIREFOX_ENABLED FALSE
+DEFINE #FIREFOX_EXT_URL addons.mozilla.org/en-US/firefox/addon/ublock-origin/
+DEFINE #EDGE_ENABLED FALSE
+DEFINE #EDGE_EXT_URL microsoftedge.microsoft.com/addons/detail/ublock-origin/odfafepnkmbhccpbejgmiehpchacaeak
+
+
+DELAY 1000
+IF_DEFINED_TRUE #CHROME_ENABLED
+    GUI r
+    DELAY 200
+    STRINGLN chrome #CHROME_EXT_URL
+    DELAY 3000
+    REM Navigate to install button
+    $i = 9
+    WHILE ( $i > 0 )
+        TAB
+        $i = ( $i - 1 )
+    END_WHILE
+    REM Confirm installation
+    REM When the extension is already installed it does not delete it :)
+    ENTER
+    DELAY 1000
+    TAB
+    ENTER
+    REM Wait for installation to finish
+    DELAY 15000
+    REM Close popup and tab
+    ESC
+    DELAY 400
+    CONTROL w
+    DELAY 200
+END_IF_DEFINED
+
+IF_DEFINED_TRUE #EDGE_ENABLED
+    GUI r
+    DELAY 200
+    STRINGLN msedge #EDGE_EXT_URL
+    DELAY 5000
+    REM Navigate to install button
+    $i = 12
+    WHILE ( $i > 0 )
+        TAB
+        $i = ( $i - 1 )
+    END_WHILE
+    ENTER
+    REM Confirm installation
+    REM I hate edge...
+    DELAY 1000
+    TAB
+    DELAY 200
+    ENTER
+    REM Wait for installation to finish
+    DELAY 15000
+    ESC
+    DELAY 200
+    REM Close popup and tab
+    CONTROL w
+    DELAY 200
+END_IF_DEFINED
+
+IF_DEFINED_TRUE #FIREFOX_ENABLED
+    GUI r
+    DELAY 200
+    STRINGLN firefox #FIREFOX_EXT_URL
+    DELAY 3000
+    REM Navigate to install button
+    $i = 13
+    WHILE ( $i > 0 )
+        TAB
+        $i = ( $i - 1 )
+    END_WHILE
+    ENTER
+    REM Confirm installation
+    DELAY 500
+    ALT a
+    DELAY 500
+    REM Close popup and tab
+    ALT o
+    DELAY 200
+    CONTROL w
+    DELAY 200
+END_IF_DEFINED
+
+REM For development
+REM_BLOCK
+ATTACKMODE STORAGE
+WAIT_FOR_BUTTON_PRESS
+RESTART_PAYLOAD
+For release
+END_REM
+ATTACKMODE OFF
